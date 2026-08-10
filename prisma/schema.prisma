@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -10,4 +5,232 @@ generator client {
 
 datasource db {
   provider = "mysql"
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Categoria {
+  idCategoria Int       @id @default(autoincrement())
+  nome        String    @unique(map: "nome_UNIQUE") @db.VarChar(100)
+  Produto     Produto[]
+}
+
+model Entrada {
+  idEntrada               Int            @id @default(autoincrement())
+  numero_documento        String?        @db.VarChar(30)
+  data_entrada            DateTime       @db.DateTime(0)
+  observacao              String?        @db.Text
+  Fornecedor_idFornecedor Int
+  Usuario_idUsuario       Int
+  Fornecedor              Fornecedor     @relation(fields: [Fornecedor_idFornecedor], references: [idFornecedor], onDelete: NoAction, onUpdate: NoAction, map: "fk_Entrada_Fornecedor")
+  Usuario                 Usuario        @relation(fields: [Usuario_idUsuario], references: [idUsuario], onDelete: NoAction, onUpdate: NoAction, map: "fk_Entrada_Usuario")
+  Item_Entrada            Item_Entrada[]
+
+  @@index([Fornecedor_idFornecedor], map: "fk_Entrada_Fornecedor_idx")
+  @@index([Usuario_idUsuario], map: "fk_Entrada_Usuario_idx")
+}
+
+model Fornecedor {
+  idFornecedor       Int                  @id @default(autoincrement())
+  razao_social       String               @db.VarChar(150)
+  nome_fantasia      String?              @db.VarChar(150)
+  cnpj               String               @unique(map: "cnpj_UNIQUE") @db.VarChar(18)
+  telefone           String?              @db.VarChar(20)
+  email              String               @db.VarChar(120)
+  endereco           String?              @db.VarChar(150)
+  numero_endereco    String?              @db.VarChar(10)
+  bairro             String?              @db.VarChar(80)
+  cidade             String?              @db.VarChar(80)
+  uf                 String?              @db.Char(2)
+  cep                String?              @db.VarChar(9)
+  status             Fornecedor_status
+  Entrada            Entrada[]
+  Produto_Fornecedor Produto_Fornecedor[]
+  Saida              Saida[]
+}
+
+model Item_Entrada {
+  idItem_Entrada    Int       @id @default(autoincrement())
+  quantidade        Int
+  valor_unitario    Decimal   @db.Decimal(10, 2)
+  lote              String?   @db.VarChar(50)
+  data_validade     DateTime? @db.Date
+  Produto_idProduto Int
+  Entrada_idEntrada Int
+  Entrada           Entrada   @relation(fields: [Entrada_idEntrada], references: [idEntrada], onDelete: NoAction, onUpdate: NoAction, map: "fk_Item_Entrada_Entrada")
+  Produto           Produto   @relation(fields: [Produto_idProduto], references: [idProduto], onDelete: NoAction, onUpdate: NoAction, map: "fk_Item_Entrada_Produto")
+
+  @@index([Entrada_idEntrada], map: "fk_Item_Entrada_Entrada_idx")
+  @@index([Produto_idProduto], map: "fk_Item_Entrada_Produto_idx")
+}
+
+model Item_Saida {
+  idItem_Saida      Int     @id @default(autoincrement())
+  quantidade        Int
+  valor_unitario    Decimal @db.Decimal(10, 2)
+  observacao        String? @db.Text
+  Produto_idProduto Int
+  Saida_idSaida     Int
+  Produto           Produto @relation(fields: [Produto_idProduto], references: [idProduto], onDelete: NoAction, onUpdate: NoAction, map: "fk_Item_Saida_Produto")
+  Saida             Saida   @relation(fields: [Saida_idSaida], references: [idSaida], onDelete: NoAction, onUpdate: NoAction, map: "fk_Item_Saida_Saida")
+
+  @@index([Produto_idProduto], map: "fk_Item_Saida_Produto_idx")
+  @@index([Saida_idSaida], map: "fk_Item_Saida_Saida_idx")
+}
+
+model Local {
+  idLocal              Int                    @id @default(autoincrement())
+  corredor             String?                @unique(map: "corredor_UNIQUE") @db.VarChar(20)
+  prateleira           Int?                   @unique(map: "prateleira_UNIQUE")
+  nivel                Int?                   @unique(map: "nivel_UNIQUE")
+  posicao              Int?                   @unique(map: "posicao_UNIQUE")
+  Movimentacao_Estoque Movimentacao_Estoque[]
+  Produto              Produto[]
+}
+
+model Marca {
+  idMarca Int       @id @default(autoincrement())
+  nome    String    @unique(map: "nome_UNIQUE") @db.VarChar(100)
+  Produto Produto[]
+}
+
+model Movimentacao_Estoque {
+  idMovimentacao    Int                                    @id
+  tipo_movimentacao Movimentacao_Estoque_tipo_movimentacao
+  quantidade        Int
+  data_movimentacao DateTime                               @db.DateTime(0)
+  observacao        String?                                @db.Text
+  Local_idLocal     Int
+  Produto_idProduto Int
+  Usuario_idUsuario Int
+  Local             Local                                  @relation(fields: [Local_idLocal], references: [idLocal], onDelete: NoAction, onUpdate: NoAction, map: "fk_Movimentacao_Estoque_Local")
+  Produto           Produto                                @relation(fields: [Produto_idProduto], references: [idProduto], onDelete: NoAction, onUpdate: NoAction, map: "fk_Movimentacao_Estoque_Produto")
+  Usuario           Usuario                                @relation(fields: [Usuario_idUsuario], references: [idUsuario], onDelete: NoAction, onUpdate: NoAction, map: "fk_Movimentacao_Estoque_Usuario")
+
+  @@index([Local_idLocal], map: "fk_Movimentacao_Estoque_Local_idx")
+  @@index([Produto_idProduto], map: "fk_Movimentacao_Estoque_Produto_idx")
+  @@index([Usuario_idUsuario], map: "fk_Movimentacao_Estoque_Usuario_idx")
+}
+
+model Pefil {
+  idPefil   Int       @id @default(autoincrement())
+  nome      String    @unique(map: "nome_UNIQUE") @db.VarChar(45)
+  descricao String?   @db.VarChar(255)
+  Usuario   Usuario[]
+}
+
+model Produto {
+  idProduto                       Int                    @id @default(autoincrement())
+  nome                            String                 @db.VarChar(255)
+  descricao                       String?                @db.Text
+  estoque_atual                   Int
+  estoque_minimo                  Int
+  preco_venda                     Decimal                @db.Decimal(10, 2)
+  codigo_barras                   String?                @unique(map: "codigo_barras_UNIQUE") @db.VarChar(50)
+  data_validade                   DateTime?              @db.Date
+  Status                          Produto_Status
+  Categoria_idCategoria           Int
+  Local_idLocal                   Int
+  Marca_idMarca                   Int?
+  Unidade_Medida_idUnidade_Medida Int
+  Item_Entrada                    Item_Entrada[]
+  Item_Saida                      Item_Saida[]
+  Movimentacao_Estoque            Movimentacao_Estoque[]
+  Categoria                       Categoria              @relation(fields: [Categoria_idCategoria], references: [idCategoria], onDelete: NoAction, onUpdate: NoAction, map: "fk_Produto_Categoria")
+  Local                           Local                  @relation(fields: [Local_idLocal], references: [idLocal], onDelete: NoAction, onUpdate: NoAction, map: "fk_Produto_Local")
+  Marca                           Marca?                 @relation(fields: [Marca_idMarca], references: [idMarca], onDelete: NoAction, onUpdate: NoAction, map: "fk_Produto_Marca")
+  Unidade_Medida                  Unidade_Medida         @relation(fields: [Unidade_Medida_idUnidade_Medida], references: [idUnidade_Medida], onDelete: NoAction, onUpdate: NoAction, map: "fk_Produto_Unidade_Medida")
+  Produto_Fornecedor              Produto_Fornecedor[]
+
+  @@index([Categoria_idCategoria], map: "fk_Produto_Categoria_idx")
+  @@index([Local_idLocal], map: "fk_Produto_Local_idx")
+  @@index([Marca_idMarca], map: "fk_Produto_Marca_idx")
+  @@index([Unidade_Medida_idUnidade_Medida], map: "fk_Produto_Unidade_Medida_idx")
+}
+
+model Produto_Fornecedor {
+  idProduto_Fornecedor      Int        @id @default(autoincrement())
+  codigo_produto_fornecedor String?    @db.VarChar(50)
+  preco_compra              Decimal    @db.Decimal(10, 2)
+  prazo_entrega             Int?
+  ultima_compra             DateTime?  @db.Date
+  Produto_idProduto         Int
+  Fornecedor_idFornecedor   Int
+  Fornecedor                Fornecedor @relation(fields: [Fornecedor_idFornecedor], references: [idFornecedor], onDelete: NoAction, onUpdate: NoAction, map: "fk_Produto_Fornecedor_Fornecedor")
+  Produto                   Produto    @relation(fields: [Produto_idProduto], references: [idProduto], onDelete: NoAction, onUpdate: NoAction, map: "fk_Produto_Fornecedor_Produto")
+
+  @@index([Fornecedor_idFornecedor], map: "fk_Produto_Fornecedor_Fornecedor_idx")
+  @@index([Produto_idProduto], map: "fk_Produto_Fornecedor_Produto_idx")
+}
+
+model Saida {
+  idSaida                 Int              @id @default(autoincrement())
+  tipo_saida              Saida_tipo_saida
+  numero_documento        String?          @db.VarChar(30)
+  data_saida              DateTime         @db.DateTime(0)
+  observacao              String?          @db.Text
+  Usuario_idUsuario       Int
+  Fornecedor_idFornecedor Int
+  Item_Saida              Item_Saida[]
+  Fornecedor              Fornecedor       @relation(fields: [Fornecedor_idFornecedor], references: [idFornecedor], onDelete: NoAction, onUpdate: NoAction, map: "fk_Saida_Fornecedor")
+  Usuario                 Usuario          @relation(fields: [Usuario_idUsuario], references: [idUsuario], onDelete: NoAction, onUpdate: NoAction, map: "fk_Saida_Usuario")
+
+  @@index([Fornecedor_idFornecedor], map: "fk_Saida_Fornecedor_idx")
+  @@index([Usuario_idUsuario], map: "fk_Saida_Usuario_idx")
+}
+
+model Unidade_Medida {
+  idUnidade_Medida Int       @id @default(autoincrement())
+  sigla            String    @unique(map: "sigla_UNIQUE") @db.VarChar(10)
+  descricao        String    @db.VarChar(50)
+  Produto          Produto[]
+}
+
+model Usuario {
+  idUsuario            Int                    @id @default(autoincrement())
+  nome                 String                 @db.VarChar(100)
+  cpf                  String                 @unique(map: "cpf_UNIQUE") @db.VarChar(14)
+  email                String                 @unique(map: "email_UNIQUE") @db.VarChar(120)
+  login                String                 @unique(map: "login_UNIQUE") @db.VarChar(50)
+  senha                String                 @db.VarChar(255)
+  status               Usuario_status
+  data_nascimento      DateTime?              @db.Date
+  data_criacao         DateTime               @db.DateTime(0)
+  ultimo_login         DateTime?              @db.DateTime(0)
+  Pefil_idPefil        Int
+  Entrada              Entrada[]
+  Movimentacao_Estoque Movimentacao_Estoque[]
+  Saida                Saida[]
+  Pefil                Pefil                  @relation(fields: [Pefil_idPefil], references: [idPefil], onDelete: NoAction, onUpdate: NoAction, map: "fk_Usuario_Pefil")
+
+  @@index([Pefil_idPefil], map: "fk_Usuario_Pefil_idx")
+}
+
+enum Movimentacao_Estoque_tipo_movimentacao {
+  Entrada
+  Sa_da         @map("Saída")
+  Ajuste
+  Transfer_ncia @map("Transferência")
+}
+
+enum Saida_tipo_saida {
+  Venda
+  Devoluc_o       @map("Devolucão")
+  Consumo_Interno @map("Consumo Interno")
+  Transfer_ncia   @map("Transferência")
+}
+
+enum Usuario_status {
+  Ativo
+  Inativo
+  Bloqueado
+}
+
+enum Produto_Status {
+  Ativo
+  Inativo
+}
+
+enum Fornecedor_status {
+  Ativo
+  Inativo
 }
