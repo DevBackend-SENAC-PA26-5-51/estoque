@@ -1,5 +1,18 @@
+import {
+  IsEnum,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+  IsDateString,
+} from 'class-validator';
+enum Produto_Status {
+  Ativo,
+  Inativo,
+}
 export class CreateProdutoDto {
-    /*
+  /*
         model Produto {
         idProduto                       Int                    @id @default(autoincrement())
         nome                            String                 @db.VarChar(255)
@@ -29,23 +42,16 @@ export class CreateProdutoDto {
         @@index([Unidade_Medida_idUnidade_Medida], map: "fk_Produto_Unidade_Medida_idx")
         }
     */
-   nome: string;
-   descricao?: string;
-   estoque_atual: number;
-   estoque_minimo: number;
-   preco_venda: number;
-   codigo_barras?: string;
-   data_validade?: Date;
-   status: string;
-
-   constructor(nome: string, descricao: string, estoque_atual: number, estoque_minimo: number, preco_venda: number, codigo_barras: string, data_validade: Date, status: string) {
-     this.nome = nome;
-     this.descricao = descricao;
-     this.estoque_atual = estoque_atual;
-     this.estoque_minimo = estoque_minimo;
-     this.preco_venda = preco_venda;
-     this.codigo_barras = codigo_barras;
-     this.data_validade = data_validade;
-     this.status = status;
-   }
+  @IsString() nome!: string;
+  @IsOptional() @IsString() descricao?: string;
+  @IsInt() estoque_atual!: number;
+  @IsInt() estoque_minimo!: number;
+  @IsNumber() preco_venda!: number;
+  @IsOptional() @IsString() codigo_barras?: string;
+  @IsOptional() @IsDateString() data_validade?: string;
+  @IsEnum(Produto_Status) status!: Produto_Status;
+  @IsInt() categoria_idCategoria!: number;
+  @IsInt() local_idLocal!: number;
+  @IsOptional() @IsInt() marca_idMarca?: number;
+  @IsInt() unidade_medida_idUnidade_Medida!: number;
 }
