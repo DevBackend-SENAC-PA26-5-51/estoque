@@ -1,21 +1,20 @@
 // src/prisma/prisma.service.ts
-import {
-  Injectable,
-  OnModuleDestroy,
-  OnApplicationBootstrap,
-} from '@nestjs/common';
-import { PrismaClient } from 'generated/prisma/client';
+import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { PrismaClient } from '../../generated/prisma/client.js';
+import { prismaClientOptions } from '../lib/prisma.js';
+
 
 @Injectable()
-export class PrismaService
-  extends PrismaClient
-  implements OnApplicationBootstrap, OnModuleDestroy
-{
-  async onApplicationBootstrap() {
-    await this.$connect();
-  }
+export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+    constructor() {
+        super(prismaClientOptions);
+    }
 
-  async onModuleDestroy() {
-    await this.$disconnect();
-  }
+    async onModuleInit() {
+        await this.$connect();
+    }
+
+    async onModuleDestroy() {
+        await this.$connect();
+    }
 }
