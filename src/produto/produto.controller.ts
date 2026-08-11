@@ -12,6 +12,7 @@ import { ProdutoService } from './produto.service';
 import { CreateProdutoDto } from './dto/create-produto.dto';
 import { UpdateProdutoDto } from './dto/update-produto.dto';
 import { EntradaEstoqueDto } from './dto/entrada-estoque.dto';
+import { SaidaEstoqueDto } from './dto/saida-estoque.dto';
 
 @Controller('produto')
 export class ProdutoController {
@@ -28,6 +29,14 @@ export class ProdutoController {
     @Body() entradaEstoqueDto: EntradaEstoqueDto,
   ) {
     return this.produtoService.entradaEstoque(id, entradaEstoqueDto);
+  }
+
+  @Post('saida/:id')
+  saidaEstoque(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() saidaEstoqueDto: SaidaEstoqueDto,
+  ) {
+    return this.produtoService.saidaEstoque(id, saidaEstoqueDto);
   }
 
   @Get()
