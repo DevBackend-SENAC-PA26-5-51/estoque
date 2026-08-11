@@ -1,7 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { ProdutoService } from './produto.service';
 import { CreateProdutoDto } from './dto/create-produto.dto';
 import { UpdateProdutoDto } from './dto/update-produto.dto';
+import { EntradaEstoqueDto } from './dto/entrada-estoque.dto';
 
 @Controller('produto')
 export class ProdutoController {
@@ -12,11 +22,19 @@ export class ProdutoController {
     return this.produtoService.create(createProdutoDto);
   }
 
+  @Post('entrada/:id')
+  entradaEstoque(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() entradaEstoqueDto: EntradaEstoqueDto,
+  ) {
+    return this.produtoService.entradaEstoque(id, entradaEstoqueDto);
+  }
+
   @Get()
   findAll() {
     return this.produtoService.findAll();
   }
- 
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.produtoService.findOne(+id);

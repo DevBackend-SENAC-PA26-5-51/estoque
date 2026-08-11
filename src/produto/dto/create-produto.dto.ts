@@ -29,4 +29,23 @@ export class CreateProdutoDto {
         @@index([Unidade_Medida_idUnidade_Medida], map: "fk_Produto_Unidade_Medida_idx")
         }
     */
+   nome: string;
+   descricao?: string;
+   estoque_atual: number;
+   estoque_minimo: number;
+   preco_venda: number;
+   codigo_barras?: string;
+   data_validade?: Date;
+   status: string;
+
+   constructor(nome: string, descricao: string, estoque_atual: number, estoque_minimo: number, preco_venda: number, codigo_barras: string, data_validade: Date, status: string) {
+     this.nome = nome;
+     this.descricao = descricao;
+     this.estoque_atual = estoque_atual;
+     this.estoque_minimo = estoque_minimo;
+     this.preco_venda = preco_venda;
+     this.codigo_barras = codigo_barras;
+     this.data_validade = data_validade;
+     this.status = status;
+   }
 }

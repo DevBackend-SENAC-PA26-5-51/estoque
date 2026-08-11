@@ -1,21 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateProdutoDto } from './dto/create-produto.dto';
 import { UpdateProdutoDto } from './dto/update-produto.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { EntradaEstoqueDto } from './dto/entrada-estoque.dto';
 
 @Injectable()
 export class ProdutoService {
-
-  constructor(private prisma: PrismaService){};
+  constructor(private prisma: PrismaService) {}
 
   create(createProdutoDto: CreateProdutoDto) {
-    this.prisma.produto
-
-    /*
-    return this.prisma.produto.create({
-      data: createProdutoDto
-    });
-    */
+    return 'This action adds a new produto';
   }
 
   findAll() {
@@ -32,5 +30,37 @@ export class ProdutoService {
 
   remove(id: number) {
     return `This action removes a #${id} produto`;
+  }
+
+  async entradaEstoque(id: number, entradaEstoqueDto: EntradaEstoqueDto) {
+    const produto = await this.prisma.produto.findUnique({
+      where: {
+        idProduto: id,
+      },
+    });
+
+    if (!produto) {
+      throw new NotFoundException('Produto não encontrado');
+    }
+
+    if (
+      !Number.isInteger(entradaEstoqueDto.quantidadeEstoque) ||
+      entradaEstoqueDto.quantidadeEstoque <= 0
+    ) {
+      throw new BadRequestException(
+        'A quantidade deve ser um número inteiro maior que zero',
+      );
+    }
+
+    return this.prisma.produto.update({
+      where: {
+        idProduto: id,
+      },
+      data: {
+        estoque_atual: {
+          increment: entradaEstoqueDto.quantidadeEstoque,
+        },
+      },
+    });
   }
 }
