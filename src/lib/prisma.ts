@@ -1,6 +1,6 @@
 import 'dotenv/config';
 
-import { PrismaClient } from '../../generated/prisma/client.js';
+import { PrismaClient } from '@prisma/client/extension';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 
 const rawDatabaseUrl = process.env.DATABASE_URL;
