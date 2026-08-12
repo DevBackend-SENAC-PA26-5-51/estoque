@@ -13,5 +13,5 @@ export class LoginDto {
   @IsNotEmpty()
   @MinLength(6)
   @ApiProperty()
-  password!: string;
+  senha!: string;
 }

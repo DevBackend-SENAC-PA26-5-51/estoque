@@ -1,16 +1,16 @@
-import { AuthService } from './auth.service.js';
+// src/auth/auth.controller.ts
+
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { AuthService } from './auth.service.js';
 import { AuthEntity } from './entity/auth.entity.js';
 import { LoginDto } from './dto/login.dto.js';
 
 @Controller('auth')
-@ApiTags('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private authService: AuthService) {}
+
   @Post('login')
-  @ApiOkResponse({ type: AuthEntity })
-  login(@Body() { email, password }: LoginDto) {
-    return this.authService.login(email, password);
+  async login(@Body() { email, senha }: LoginDto): Promise<AuthEntity> {
+    return this.authService.login(email, senha);
   }
 }
