@@ -1,14 +1,7 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { CreateProdutoDto } from './dto/create-produto.dto.js';
-import { UpdateProdutoDto } from './dto/update-produto.dto.js';
-import { PrismaService } from '../prisma/prisma.service.js';
-import { EntradaEstoqueDto } from './dto/entrada-estoque.dto.js';
-import { SaidaEstoqueDto } from './dto/saida-estoque.dto.js';
-import { Produto_Status } from '../../generated/prisma/client.js';
+import { Injectable } from '@nestjs/common';
+import { CreateProdutoDto } from './dto/create-produto.dto';
+import { UpdateProdutoDto } from './dto/update-produto.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ProdutoService {
@@ -16,27 +9,9 @@ export class ProdutoService {
 
   async create(createProdutoDto: CreateProdutoDto) {
     return this.prisma.produto.create({
-      data: {
-        nome: createProdutoDto.nome,
-        descricao: createProdutoDto.descricao,
-        estoque_atual: createProdutoDto.estoque_atual,
-        estoque_minimo: createProdutoDto.estoque_minimo,
-        preco_venda: createProdutoDto.preco_venda,
-        codigo_barras: createProdutoDto.codigo_barras,
-        data_validade: createProdutoDto.data_validade,
-
-        Status: createProdutoDto.status as unknown as Produto_Status,
-
-        Categoria_idCategoria: createProdutoDto.categoria_idCategoria,
-
-        Local_idLocal: createProdutoDto.local_idLocal,
-
-        Marca_idMarca: createProdutoDto.marca_idMarca,
-
-        Unidade_Medida_idUnidade_Medida:
-          createProdutoDto.unidade_medida_idUnidade_Medida,
-      },
+      data: createProdutoDto
     });
+    */
   }
 
   findAll() {
@@ -47,8 +22,43 @@ export class ProdutoService {
     return `This action returns a #${id} produto`;
   }
 
-  update(id: number, updateProdutoDto: UpdateProdutoDto) {
-    return `This action updates a #${id} produto`;
+  async update(id: number, updateProdutoDto: UpdateProdutoDto) {
+    const produto = await this.prisma.produto.findUnique({
+      where: { idProduto: id },
+    });
+
+    if (!produto) {
+      throw new NotFoundException('Produto não encontrado');
+    }
+
+    try {
+      return await this.prisma.produto.update({
+        where: { idProduto: id },
+        data: {
+          nome: updateProdutoDto.nome,
+          descricao: updateProdutoDto.descricao,
+          estoque_atual: updateProdutoDto.estoque_atual,
+          estoque_minimo: updateProdutoDto.estoque_minimo,
+          preco_venda: updateProdutoDto.preco_venda,
+          codigo_barras: updateProdutoDto.codigo_barras,
+          data_validade: updateProdutoDto.data_validade,
+          Status: updateProdutoDto.status as unknown as Produto_Status,
+          Categoria_idCategoria: updateProdutoDto.categoria_idCategoria,
+          Local_idLocal: updateProdutoDto.local_idLocal,
+          Marca_idMarca: updateProdutoDto.marca_idMarca,
+          Unidade_Medida_idUnidade_Medida:
+            updateProdutoDto.unidade_medida_idUnidade_Medida,
+        },
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new ConflictException('Código de barras já cadastrado');
+      }
+      throw error;
+    }
   }
 
   remove(id: number) {

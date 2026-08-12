@@ -11,6 +11,8 @@ enum Produto_Status {
   Ativo,
   Inativo,
 }
+import { Produto_Status } from '../../../generated/prisma/client.js';
+
 export class CreateProdutoDto {
   /*
         model Produto {
