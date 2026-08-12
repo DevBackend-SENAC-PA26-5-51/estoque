@@ -1,7 +1,22 @@
+<<<<<<< HEAD
 import { Injectable } from '@nestjs/common';
 import { CreateProdutoDto } from './dto/create-produto.dto';
 import { UpdateProdutoDto } from './dto/update-produto.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+=======
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { CreateProdutoDto } from './dto/create-produto.dto.js';
+import { UpdateProdutoDto } from './dto/update-produto.dto.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { EntradaEstoqueDto } from './dto/entrada-estoque.dto.js';
+import { SaidaEstoqueDto } from './dto/saida-estoque.dto.js';
+import { Prisma, Produto_Status } from '../../generated/prisma/client.js';
+>>>>>>> 7645cb5aff4361ddf06b5782121811facec62f03
 
 @Injectable()
 export class ProdutoService {
@@ -9,7 +24,25 @@ export class ProdutoService {
 
   async create(createProdutoDto: CreateProdutoDto) {
     return this.prisma.produto.create({
+<<<<<<< HEAD
       data: createProdutoDto
+=======
+      data: {
+        nome: createProdutoDto.nome,
+        descricao: createProdutoDto.descricao,
+        estoque_atual: createProdutoDto.estoque_atual,
+        estoque_minimo: createProdutoDto.estoque_minimo,
+        preco_venda: createProdutoDto.preco_venda,
+        codigo_barras: createProdutoDto.codigo_barras,
+        data_validade: createProdutoDto.data_validade,
+        Status: createProdutoDto.status as unknown as Produto_Status,
+        Categoria_idCategoria: createProdutoDto.categoria_idCategoria,
+        Local_idLocal: createProdutoDto.local_idLocal,
+        Marca_idMarca: createProdutoDto.marca_idMarca,
+        Unidade_Medida_idUnidade_Medida:
+          createProdutoDto.unidade_medida_idUnidade_Medida,
+      },
+>>>>>>> 7645cb5aff4361ddf06b5782121811facec62f03
     });
     */
   }
