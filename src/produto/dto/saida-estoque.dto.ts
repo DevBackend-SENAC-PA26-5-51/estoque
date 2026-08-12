@@ -7,7 +7,7 @@ import {
   IsPositive,
   IsString,
 } from 'class-validator';
-import { Saida_tipo_saida } from 'generated/prisma/client';
+import { Saida_tipo_saida } from '../../../generated/prisma/client.js';
 
 export class SaidaEstoqueDto {
   @IsInt()

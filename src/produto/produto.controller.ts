@@ -8,11 +8,11 @@ import {
   Delete,
   ParseIntPipe,
 } from '@nestjs/common';
-import { ProdutoService } from './produto.service';
-import { CreateProdutoDto } from './dto/create-produto.dto';
-import { UpdateProdutoDto } from './dto/update-produto.dto';
-import { EntradaEstoqueDto } from './dto/entrada-estoque.dto';
-import { SaidaEstoqueDto } from './dto/saida-estoque.dto';
+import { ProdutoService } from './produto.service.js';
+import { CreateProdutoDto } from './dto/create-produto.dto.js';
+import { UpdateProdutoDto } from './dto/update-produto.dto.js';
+import { EntradaEstoqueDto } from './dto/entrada-estoque.dto.js';
+import { SaidaEstoqueDto } from './dto/saida-estoque.dto.js';
 
 @Controller('produto')
 export class ProdutoController {

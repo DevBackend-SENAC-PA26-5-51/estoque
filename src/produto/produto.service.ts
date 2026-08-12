@@ -3,12 +3,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateProdutoDto } from './dto/create-produto.dto';
-import { UpdateProdutoDto } from './dto/update-produto.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { EntradaEstoqueDto } from './dto/entrada-estoque.dto';
-import { SaidaEstoqueDto } from './dto/saida-estoque.dto';
-import { Produto_Status } from 'generated/prisma/client';
+import { CreateProdutoDto } from './dto/create-produto.dto.js';
+import { UpdateProdutoDto } from './dto/update-produto.dto.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { EntradaEstoqueDto } from './dto/entrada-estoque.dto.js';
+import { SaidaEstoqueDto } from './dto/saida-estoque.dto.js';
+import { Produto_Status } from '../../generated/prisma/client.js';
 
 @Injectable()
 export class ProdutoService {
