@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-import { Injectable } from '@nestjs/common';
-import { CreateProdutoDto } from './dto/create-produto.dto';
-import { UpdateProdutoDto } from './dto/update-produto.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
-=======
 import {
   BadRequestException,
   ConflictException,
@@ -16,7 +10,6 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import { EntradaEstoqueDto } from './dto/entrada-estoque.dto.js';
 import { SaidaEstoqueDto } from './dto/saida-estoque.dto.js';
 import { Prisma, Produto_Status } from '../../generated/prisma/client.js';
->>>>>>> 7645cb5aff4361ddf06b5782121811facec62f03
 
 @Injectable()
 export class ProdutoService {
@@ -24,9 +17,6 @@ export class ProdutoService {
 
   async create(createProdutoDto: CreateProdutoDto) {
     return this.prisma.produto.create({
-<<<<<<< HEAD
-      data: createProdutoDto
-=======
       data: {
         nome: createProdutoDto.nome,
         descricao: createProdutoDto.descricao,
@@ -42,9 +32,7 @@ export class ProdutoService {
         Unidade_Medida_idUnidade_Medida:
           createProdutoDto.unidade_medida_idUnidade_Medida,
       },
->>>>>>> 7645cb5aff4361ddf06b5782121811facec62f03
     });
-    */
   }
 
   findAll() {

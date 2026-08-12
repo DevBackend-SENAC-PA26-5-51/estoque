@@ -7,13 +7,6 @@ import {
   IsString,
   IsDateString,
 } from 'class-validator';
-<<<<<<< HEAD
-enum Produto_Status {
-  Ativo,
-  Inativo,
-}
-=======
->>>>>>> 7645cb5aff4361ddf06b5782121811facec62f03
 import { Produto_Status } from '../../../generated/prisma/client.js';
 
 export class CreateProdutoDto {
