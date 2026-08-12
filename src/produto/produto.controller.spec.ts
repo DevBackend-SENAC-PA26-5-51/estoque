@@ -1,6 +1,7 @@
+import { describe, expect, it, beforeEach } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ProdutoController } from './produto.controller';
-import { ProdutoService } from './produto.service';
+import { ProdutoController } from './produto.controller.js';
+import { ProdutoService } from './produto.service.js';
 
 describe('ProdutoController', () => {
   let controller: ProdutoController;
