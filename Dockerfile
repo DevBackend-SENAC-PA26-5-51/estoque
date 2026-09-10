@@ -25,6 +25,7 @@ RUN npm prune --omit=dev
 FROM base AS runner
 ENV NODE_ENV=production
 ENV PORT=5001
+ENV DATABASE_URL=mysql://estoque:estoque123@db:3306/estoque
 WORKDIR /app
 
 COPY package.json package-lock.json prisma.config.ts ./
@@ -40,4 +41,5 @@ EXPOSE 5001
 
 # Aplique migrations na subida do banco com:
 #   npx prisma migrate deploy
-CMD ["node", "dist/main.js"]
+# CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]
