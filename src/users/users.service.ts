@@ -11,7 +11,6 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
-
     const hashedPassword = await bcrypt.hash(
       createUserDto.senha,
       roundsOfHashing,
@@ -23,9 +22,11 @@ export class UsersService {
         cpf: createUserDto.cpf,
         email: createUserDto.email,
         login: createUserDto.login,
-        senha: hashedPassword ,
+        senha: hashedPassword,
         status: createUserDto.status as any,
-        data_nascimento: createUserDto.data_nascimento ? new Date(createUserDto.data_nascimento) : null,
+        data_nascimento: createUserDto.data_nascimento
+          ? new Date(createUserDto.data_nascimento)
+          : null,
         data_criacao: new Date(),
         Pefil_idPefil: createUserDto.perfilIdPerfil,
       },
@@ -56,8 +57,10 @@ export class UsersService {
     if (updateUserDto.login !== undefined) data.login = updateUserDto.login;
     if (updateUserDto.senha !== undefined) data.senha = updateUserDto.senha;
     if (updateUserDto.status !== undefined) data.status = updateUserDto.status;
-    if (updateUserDto.data_nascimento !== undefined) data.data_nascimento = new Date(updateUserDto.data_nascimento);
-    if (updateUserDto.perfilIdPerfil !== undefined) data.Pefil_idPefil = updateUserDto.perfilIdPerfil;
+    if (updateUserDto.data_nascimento !== undefined)
+      data.data_nascimento = new Date(updateUserDto.data_nascimento);
+    if (updateUserDto.perfilIdPerfil !== undefined)
+      data.Pefil_idPefil = updateUserDto.perfilIdPerfil;
 
     return this.prisma.usuario.update({
       where: { idUsuario },

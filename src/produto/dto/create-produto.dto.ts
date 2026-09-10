@@ -3,55 +3,83 @@ import {
   IsInt,
   IsNumber,
   IsOptional,
-  IsPositive,
   IsString,
   IsDateString,
+  IsDate,
+  IsNotEmpty,
 } from 'class-validator';
-enum Produto_Status {
-  Ativo,
-  Inativo,
-}
-export class CreateProdutoDto {
-  /*
-        model Produto {
-        idProduto                       Int                    @id @default(autoincrement())
-        nome                            String                 @db.VarChar(255)
-        descricao                       String?                @db.Text
-        estoque_atual                   Int
-        estoque_minimo                  Int
-        preco_venda                     Decimal                @db.Decimal(10, 2)
-        codigo_barras                   String?                @unique(map: "codigo_barras_UNIQUE") @db.VarChar(50)
-        data_validade                   DateTime?              @db.Date
-        Status                          Produto_Status
-        Categoria_idCategoria           Int
-        Local_idLocal                   Int
-        Marca_idMarca                   Int?
-        Unidade_Medida_idUnidade_Medida Int
-        Item_Entrada                    Item_Entrada[]
-        Item_Saida                      Item_Saida[]
-        Movimentacao_Estoque            Movimentacao_Estoque[]
-        Categoria                       Categoria              @relation(fields: [Categoria_idCategoria], references: [idCategoria], onDelete: NoAction, onUpdate: NoAction, map: "fk_Produto_Categoria")
-        Local                           Local                  @relation(fields: [Local_idLocal], references: [idLocal], onDelete: NoAction, onUpdate: NoAction, map: "fk_Produto_Local")
-        Marca                           Marca?                 @relation(fields: [Marca_idMarca], references: [idMarca], onDelete: NoAction, onUpdate: NoAction, map: "fk_Produto_Marca")
-        Unidade_Medida                  Unidade_Medida         @relation(fields: [Unidade_Medida_idUnidade_Medida], references: [idUnidade_Medida], onDelete: NoAction, onUpdate: NoAction, map: "fk_Produto_Unidade_Medida")
-        Produto_Fornecedor              Produto_Fornecedor[]
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
-        @@index([Categoria_idCategoria], map: "fk_Produto_Categoria_idx")
-        @@index([Local_idLocal], map: "fk_Produto_Local_idx")
-        @@index([Marca_idMarca], map: "fk_Produto_Marca_idx")
-        @@index([Unidade_Medida_idUnidade_Medida], map: "fk_Produto_Unidade_Medida_idx")
-        }
-    */
-  @IsString() nome!: string;
-  @IsOptional() @IsString() descricao?: string;
-  @IsInt() estoque_atual!: number;
-  @IsInt() estoque_minimo!: number;
-  @IsNumber() preco_venda!: number;
-  @IsOptional() @IsString() codigo_barras?: string;
-  @IsOptional() @IsDateString() data_validade?: string;
-  @IsEnum(Produto_Status) status!: Produto_Status;
-  @IsInt() categoria_idCategoria!: number;
-  @IsInt() local_idLocal!: number;
-  @IsOptional() @IsInt() marca_idMarca?: number;
-  @IsInt() unidade_medida_idUnidade_Medida!: number;
+export enum ProdutoStatus {
+  Ativo = 'Ativo',
+  Inativo = 'Inativo',
+}
+
+export class CreateProdutoDto {
+  @ApiProperty({ example: 'Produto A', description: 'Nome do produto' })
+  @IsString()
+  nome!: string;
+
+  @ApiPropertyOptional({
+    example: 'Descrição do produto',
+    description: 'Descrição detalhada',
+  })
+  @IsOptional()
+  @IsString()
+  descricao?: string;
+
+  @ApiProperty({ example: 100, description: 'Quantidade atual em estoque' })
+  @IsInt()
+  estoque_atual!: number;
+
+  @ApiProperty({ example: 10, description: 'Quantidade mínima para alerta' })
+  @IsInt()
+  estoque_minimo!: number;
+
+  @ApiProperty({ example: 29.99, description: 'Preço de venda do produto' })
+  @IsNumber()
+  preco_venda!: number;
+
+  @ApiPropertyOptional({
+    example: '7891234567890',
+    description: 'Código de barras',
+  })
+  @IsOptional()
+  @IsString()
+  codigo_barras?: string;
+
+  @ApiPropertyOptional({
+    example: '2025-12-31',
+    description: 'Data de validade (YYYY-MM-DD)',
+  })
+  @IsOptional()
+  @Type(()=>Date)
+  @IsDate()
+  data_validade?: string;
+
+  @ApiProperty({
+    enum: ProdutoStatus,
+    example: ProdutoStatus.Ativo,
+    description: 'Status do produto',
+  })
+  @IsEnum(ProdutoStatus)
+  status!: ProdutoStatus;
+
+  @ApiProperty({ example: 1, description: 'ID da categoria' })
+  @IsInt()
+  categoria_idCategoria!: number;
+
+  @ApiProperty({ example: 1, description: 'ID do local de armazenamento' })
+  @IsInt()
+  local_idLocal!: number;
+
+  @ApiPropertyOptional({ example: 1, description: 'ID da marca (opcional)' })
+  @IsOptional()
+  @IsInt()
+  marca_idMarca?: number;
+
+  @ApiProperty({ example: 1, description: 'ID da unidade de medida' })
+  @IsInt()
+  unidade_medida_idUnidade_Medida!: number;
 }

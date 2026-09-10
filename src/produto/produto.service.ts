@@ -25,7 +25,7 @@ export class ProdutoService {
         codigo_barras: createProdutoDto.codigo_barras,
         data_validade: createProdutoDto.data_validade,
 
-        Status: createProdutoDto.status as unknown as Produto_Status,
+        Status: createProdutoDto.status,
 
         Categoria_idCategoria: createProdutoDto.categoria_idCategoria,
 
