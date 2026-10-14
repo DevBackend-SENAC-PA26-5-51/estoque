@@ -11,9 +11,9 @@ export class PrismaService
         super(prismaClientOptions);
     }
 
-    async onModuleInit() {
-        await this.$connect();
-    }
+  async onModuleInit() {
+    await this.$connect();
+  }
 
     async onModuleDestroy() {
         await this.$disconnect();
