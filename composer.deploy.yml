@@ -1,0 +1,69 @@
+
+services:
+  db:
+    image: mariadb:11
+    container_name: estoque-db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?Defina a senha root no .env}
+      MARIADB_DATABASE: estoque
+      MARIADB_USER: estoque
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:?Defina a senha do banco no .env}
+    volumes:
+      - estoque-data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "healthcheck.sh",
+          "--connect",
+          "--innodb_initialized"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  migrate:
+    image: gabrielpccosta/api-estoque:1.0-beta
+    container_name: estoque-migrate
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?Defina DATABASE_URL no .env}
+    command: ["npx", "prisma", "migrate", "deploy"]
+    restart: "no"
+
+  seed:
+    image: gabrielpccosta/api-estoque:1.0-beta
+    container_name: estoque-seed
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?Defina DATABASE_URL no .env}
+    command: ["npx", "prisma", "db", "seed"]
+    restart: "no"
+
+  app:
+    image: gabrielpccosta/api-estoque:1.0-beta
+    container_name: estoque-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      seed:
+        condition: service_completed_successfully
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DATABASE_URL: ${DATABASE_URL:?Defina DATABASE_URL no .env}
+    ports:
+      - "5000:5000"
+
+
+volumes:
+  estoque-data:
