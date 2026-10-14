@@ -8,6 +8,9 @@ import {
   IsDate,
   IsNotEmpty,
 } from 'class-validator';
+
+import { Produto_Status } from '../../../generated/prisma/client.js';
+
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
