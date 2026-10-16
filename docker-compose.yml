@@ -1,28 +1,22 @@
 services:
   db:
-    image: mariadb:11
-    container_name: estoque-db
+    image: ${MARIADB_IMAGE:-mariadb:11.4}
+    container_name: ${APP_NAME:-estoque-api}-db
     restart: unless-stopped
     environment:
-      MARIADB_ROOT_PASSWORD: root123
-      MARIADB_DATABASE: estoque
-      MARIADB_USER: estoque
-      MARIADB_PASSWORD: estoque123
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root123}
+      MARIADB_DATABASE: ${DB_NAME:-estoque}
+      MARIADB_USER: ${DB_USER:-estoque}
+      MARIADB_PASSWORD: ${DB_PASSWORD:-estoque123}
     ports:
-      - "3306:3306"
+      - ${DB_EXTERNAL_PORT:-4406}:${DB_INTERNAL_PORT:-3306}
     volumes:
-      - estoque-data:/var/lib/mysql
+      - mariadb_data:/var/lib/mysql
     healthcheck:
       test:
         [
-          "CMD",
-          "mariadb-admin",
-          "ping",
-          "-h",
-          "localhost",
-          "-u",
-          "root",
-          "-proot123",
+          'CMD-SHELL',
+          'mariadb-admin ping -h localhost -u root -p${DB_ROOT_PASSWORD:-root123} --silent',
         ]
       interval: 10s
       timeout: 5s
@@ -31,17 +25,35 @@ services:
 
   migrate:
     build: .
-    container_name: estoque-migrate
+    container_name: ${APP_NAME:-estoque-api}-migrate
     depends_on:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: mysql://estoque:estoque123@db:3306/estoque
-    command: ["npx", "prisma", "migrate", "deploy"]
+      DATABASE_URL: ${DATABASE_URL}
+    command: ['npx', 'prisma', 'migrate', 'deploy']
+
+  seed:
+    build: .
+    container_name: ${APP_NAME:-estoque-api}-seed
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?Defina DATABASE_URL no .env}
+    command:
+      - /bin/sh
+      - -c
+      - |
+        npx tsx prisma/seed.ts || {
+          echo "Aviso: Seed falhou. Continuando..."
+          exit 0
+        }
+    restart: 'no'
 
   app:
     build: .
-    container_name: estoque-api
+    container_name: ${APP_NAME:-estoque-api}-app
     restart: unless-stopped
     depends_on:
       db:
@@ -51,9 +63,10 @@ services:
     environment:
       NODE_ENV: production
       PORT: 5001
-      DATABASE_URL: mysql://estoque:estoque123@db:3306/estoque
+      DATABASE_URL: ${DATABASE_URL}
     ports:
-      - "5001:5001"
+      - ${APP_PORT:-5000}:${APP_PORT:-5000}
 
 volumes:
-  estoque-data:
+  mariadb_data:
+    name: ${DB_VOLUME:-mariadb_data}
