@@ -4,10 +4,10 @@ services:
     container_name: estoque-db
     restart: unless-stopped
     environment:
-      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?Defina a senha root no .env}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Defina a senha root no .env}
       MARIADB_DATABASE: estoque
       MARIADB_USER: estoque
-      MARIADB_PASSWORD: ${MARIADB_PASSWORD:?Defina a senha do banco no .env}
+      MARIADB_PASSWORD: ${DB_PASSWORD:?Defina a senha do banco no .env}
     volumes:
       - estoque-data:/var/lib/mysql
     healthcheck:
@@ -18,7 +18,7 @@ services:
       start_period: 20s
 
   migrate:
-    image: gabrielpccosta/api-estoque:1.0-beta
+    image: gabrielpccosta/api-estoque:1.1.2-beta
     container_name: estoque-migrate
     depends_on:
       db:
@@ -29,7 +29,7 @@ services:
     restart: 'no'
 
   seed:
-    image: gabrielpccosta/api-estoque:1.0-beta
+    image: gabrielpccosta/api-estoque:1.1.2-beta
     container_name: estoque-seed
     depends_on:
       migrate:
@@ -47,7 +47,7 @@ services:
     restart: 'no'
 
   app:
-    image: gabrielpccosta/api-estoque:1.0-beta
+    image: gabrielpccosta/api-estoque:1.1.2-beta
     container_name: estoque-api
     restart: unless-stopped
     depends_on:
