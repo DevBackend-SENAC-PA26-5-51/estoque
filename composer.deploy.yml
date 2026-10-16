@@ -1,4 +1,3 @@
-
 services:
   db:
     image: mariadb:11
@@ -12,13 +11,7 @@ services:
     volumes:
       - estoque-data:/var/lib/mysql
     healthcheck:
-      test:
-        [
-          "CMD",
-          "healthcheck.sh",
-          "--connect",
-          "--innodb_initialized"
-        ]
+      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -32,8 +25,8 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: ${DATABASE_URL:?Defina DATABASE_URL no .env}
-    command: ["npx", "prisma", "migrate", "deploy"]
-    restart: "no"
+    command: ['npx', 'prisma', 'migrate', 'deploy']
+    restart: 'no'
 
   seed:
     image: gabrielpccosta/api-estoque:1.0-beta
@@ -43,8 +36,15 @@ services:
         condition: service_completed_successfully
     environment:
       DATABASE_URL: ${DATABASE_URL:?Defina DATABASE_URL no .env}
-    command: ["npx", "prisma", "db", "seed"]
-    restart: "no"
+    command:
+      - /bin/sh
+      - -c
+      - |
+        npx tsx prisma/seed.ts || {
+          echo "Aviso: Seed falhou. Continuando..."
+          exit 0
+        }
+    restart: 'no'
 
   app:
     image: gabrielpccosta/api-estoque:1.0-beta
@@ -62,8 +62,7 @@ services:
       PORT: 5000
       DATABASE_URL: ${DATABASE_URL:?Defina DATABASE_URL no .env}
     ports:
-      - "5000:5000"
-
+      - ${APP_PORT:-5000}:${APP_PORT:-5000}
 
 volumes:
   estoque-data:
