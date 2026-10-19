@@ -36,22 +36,23 @@ export class ProdutoService {
   }
 
   findAll() {
-    return `This action returns all produto`;
-  }
+  return this.prisma.produto.findMany();
+}
 
-  findOne(id: number) {
-    return `This action returns a #${id} produto`;
-  }
+async findOne(id: number) {
+  const produto = await this.prisma.produto.findUnique({
+    where: { idProduto: id },
+  });
+  if (!produto) throw new NotFoundException('Produto não encontrado');
+  return produto;
+}
 
-  async update(id: number, updateProdutoDto: UpdateProdutoDto) {
-    const produto = await this.prisma.produto.findUnique({
-      where: { idProduto: id },
-    });
+async remove(id: number) {
+  await this.findOne(id); // garante que existe
+  return this.prisma.produto.delete({ where: { idProduto: id } });
+}
 
-    if (!produto) {
-      throw new NotFoundException('Produto não encontrado');
-    }
-
+async update(id: number, updateProdutoDto: UpdateProdutoDto) {
     try {
       return await this.prisma.produto.update({
         where: { idProduto: id },
@@ -82,9 +83,7 @@ export class ProdutoService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} produto`;
-  }
+
 
   async entradaEstoque(id: number, dto: EntradaEstoqueDto) {
     return this.prisma.$transaction(async (tx) => {
